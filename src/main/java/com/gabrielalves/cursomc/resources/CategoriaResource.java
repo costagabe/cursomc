@@ -1,6 +1,8 @@
 package com.gabrielalves.cursomc.resources;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gabrielalves.cursomc.domain.Categoria;
+import com.gabrielalves.cursomc.dto.CategoriaDTO;
 import com.gabrielalves.cursomc.services.CategoriaService;
 
 @RestController
@@ -23,10 +26,15 @@ public class CategoriaResource {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) {
-
 		Categoria obj = service.find(id);
 		return ResponseEntity.ok().body(obj);
-
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<CategoriaDTO>> findAll() {
+		List<Categoria> list = service.findAll();
+		List<CategoriaDTO> listDto = list.stream().map(c -> new CategoriaDTO(c)).collect(Collectors.toList());
+		return ResponseEntity.ok().body(listDto);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -38,7 +46,7 @@ public class CategoriaResource {
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Void> updadate(@RequestBody Categoria categoria, @PathVariable Integer id) {
+	public ResponseEntity<Void> update(@RequestBody Categoria categoria, @PathVariable Integer id) {
 		categoria.setId(id);
 		categoria = service.update(categoria);
 		return ResponseEntity.noContent().build();
